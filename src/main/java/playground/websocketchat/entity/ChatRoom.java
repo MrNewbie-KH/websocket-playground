@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import playground.websocketchat.entity.enums.ChatMessageType;
 
 import java.util.List;
 
@@ -20,6 +21,10 @@ public class ChatRoom {
     Long id;
     @Column(nullable = false)
     String title;
+    ChatMessageType type;
     @OneToMany(mappedBy = "room")
     private List<Message> messages;
+    @OneToMany(mappedBy = "chatRoom")
+    private List<ChatRoom> chatRooms;
+
 }

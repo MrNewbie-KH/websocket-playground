@@ -12,6 +12,7 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
 //    two parts
 //    part 1 handshake and connect
     public void registerStompEndpoints(StompEndpointRegistry registry){
+//        establish connection via http and upgrade to websocket
         registry.addEndpoint("/websocket").withSockJS();
     }
 //    part 2 message handling and broker

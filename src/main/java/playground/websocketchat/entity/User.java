@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import playground.websocketchat.entity.enums.UserStatus;
 
 import java.util.List;
 
@@ -26,4 +27,6 @@ public class User {
     UserStatus status;
     @OneToMany(mappedBy = "sender", fetch = FetchType.LAZY)
     private List<Message> messages;
+    @OneToMany(mappedBy = "member",fetch = FetchType.LAZY)
+    private List<ChatRoomMembers> chatRoomMembers;
 }
