@@ -24,7 +24,6 @@ public class ChatRoom {
     ChatMessageType type;
     @OneToMany(mappedBy = "room")
     private List<Message> messages;
-    @OneToMany(mappedBy = "chatRoom")
-    private List<ChatRoom> chatRooms;
-
+    @OneToMany(mappedBy = "room")
+    private List<ChatRoomMembers> chatRoomMembers;
 }
