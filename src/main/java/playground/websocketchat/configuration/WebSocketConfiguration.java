@@ -9,14 +9,17 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer {
-//    two parts
+    //    two parts
 //    part 1 handshake and connect
-    public void registerStompEndpoints(StompEndpointRegistry registry){
+    @Override
+    public void registerStompEndpoints(StompEndpointRegistry registry) {
 //        establish connection via http and upgrade to websocket
-        registry.addEndpoint("/websocket").withSockJS();
+        registry.addEndpoint("/websocket").setAllowedOriginPatterns("*").withSockJS();
     }
-//    part 2 message handling and broker
-    public void configureMessageBroker(MessageBrokerRegistry registry){
+
+    //    part 2 message handling and broker
+    @Override
+    public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.enableSimpleBroker("/topic");
         registry.setApplicationDestinationPrefixes("/app");
 
