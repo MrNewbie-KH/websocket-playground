@@ -9,10 +9,6 @@ import playground.websocketchat.entity.Message;
 
 @Controller
 public class ChatController {
-    @MessageMapping("/chat.addUserToChatRoom")
-    @SendTo("/topic/room1")
-    public Message addUserToChatRoom(@Payload Message message, SimpMessageHeaderAccessor headerAccessor) {
-//    first add user to chatting area thin you gonna be able to send messages
-        return   message;
-    }
+
+
 }
