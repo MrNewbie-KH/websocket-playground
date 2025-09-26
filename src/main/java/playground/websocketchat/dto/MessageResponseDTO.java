@@ -2,7 +2,7 @@ package playground.websocketchat.dto;
 
 public class MessageResponseDTO {
     String message;
-    UserResponseDTO user;
-    ChatRoomResponseDTO chatRoom;
+    UserResponseDTO sender;
+    ChatRoomResponseDTO room;
     Long id;
 }

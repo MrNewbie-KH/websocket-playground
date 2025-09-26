@@ -23,17 +23,12 @@ import playground.websocketchat.service.ChatRoomService;
 @RequiredArgsConstructor
 public class ChatController {
 
-    private final SimpMessagingTemplate messagingTemplate;
-    private final ChatRoomRepository chatRoomRepository;
-    private final ChatRoomMembersRepository getChatRoomMembersRepository;
-    private final UserRepository userRepository;
-    private final ChatRoomMembersRepository chatRoomMembersRepository;
     private final ChatHandlingService chatHandlingService;
 
     @MessageMapping("/chat.join")
     @SendTo("/topic/room/{roomId}")
     public MessageResponseDTO join(JoinRoomRequestDTO joinRequest) {
-       return  chatHandlingService.handleJoin();
+       return  chatHandlingService.handleJoin(joinRequest);
 
     }
 }
