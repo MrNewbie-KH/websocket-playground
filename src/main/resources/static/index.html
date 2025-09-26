@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
+    <style>
+        #chatSection { display: none; margin-top: 20px; }
+    </style>
+</head>
+<body>
+<h2>Chat Demo</h2>
+
+<div id="joinSection">
+    <h3>Join Room</h3>
+    <input id="roomId" placeholder="Room ID" />
+    <input id="email" placeholder="Your email" />
+    <button onclick="joinRoom()">Join</button>
+</div>
+
+<div id="chatSection">
+    <h3>Room: <span id="currentRoom"></span></h3>
+    <button onclick="leaveRoom()">Leave Room</button>
+    <br><br>
+
+    <input id="msg" placeholder="Type message..." />
+    <button onclick="sendMessage()">Send</button>
+
+    <ul id="messages"></ul>
+</div>
+
+<script>
+    let stompClient = null;
+    let roomId = null;
+    let username = null;
+    let subscription = null;
+
+    function connectWS(callback) {
+  if (!stompClient) {
+    const socket = new WebSocket("ws://localhost:8080/connect");
+    stompClient = Stomp.over(socket);
+
+    // Pass the email in the CONNECT headers
+    stompClient.connect({ email: document.getElementById("email").value }, callback);
+  } else {
+    callback();
+  }
+}
+
+
+    function joinRoom() {
+      roomId = document.getElementById("roomId").value;
+      email = document.getElementById("email").value;
+
+      connectWS(() => {
+        subscription = stompClient.subscribe("/topic/room/" + roomId, (messageOutput) => {
+          const msg = JSON.parse(messageOutput.body);
+          const li = document.createElement("li");
+          li.innerText = `[${msg.type}] ${msg.sender || ''}: ${msg.content}`;
+          document.getElementById("messages").appendChild(li);
+        });
+
+        stompClient.send("/app/chat.join", {}, JSON.stringify({
+          sender: email,
+          room: roomId
+        }));
+
+        document.getElementById("joinSection").style.display = "none";
+        document.getElementById("chatSection").style.display = "block";
+        document.getElementById("currentRoom").innerText = roomId;
+      });
+    }
+
+    function leaveRoom() {
+      if (subscription) {
+        subscription.unsubscribe();
+        stompClient.send("/app/chat.leave", {}, JSON.stringify({
+          sender: email,
+          room: roomId
+        }));
+        subscription = null;
+      }
+      document.getElementById("joinSection").style.display = "block";
+      document.getElementById("chatSection").style.display = "none";
+      document.getElementById("messages").innerHTML = "";
+    }
+
+    function sendMessage() {
+      const msg = document.getElementById("msg").value;
+      stompClient.send("/app/chat.send", {}, JSON.stringify({
+        type: "CHAT",
+        sender: email,
+        content: msg,
+        room: roomId
+      }));
+      document.getElementById("msg").value = "";
+    }
+</script>
+</body>
+</html>

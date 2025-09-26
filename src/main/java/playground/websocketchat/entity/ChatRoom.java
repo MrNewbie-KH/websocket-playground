@@ -21,7 +21,6 @@ public class ChatRoom {
     Long id;
     @Column(nullable = false)
     String title;
-    ChatMessageType type;
     @OneToMany(mappedBy = "room")
     private List<Message> messages;
     @OneToMany(mappedBy = "room")
