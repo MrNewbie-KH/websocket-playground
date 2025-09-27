@@ -6,5 +6,5 @@ import playground.websocketchat.entity.ChatRoomMembers;
 import playground.websocketchat.entity.User;
 
 public interface ChatRoomMembersRepository extends JpaRepository<ChatRoomMembers, Long> {
-    boolean existsByRoomAndUser(ChatRoom room, User user);
+    boolean existsByRoomAndMember(ChatRoom room, User user);
 }

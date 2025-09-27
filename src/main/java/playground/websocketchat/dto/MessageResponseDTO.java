@@ -8,6 +8,6 @@ import lombok.Data;
 public class MessageResponseDTO {
     private final String message;
     private final ChatRoomResponseDTO room;
-    private final UserResponseDTO user;
+    private final UserResponseDTO sender;
     private final Long id;
 }

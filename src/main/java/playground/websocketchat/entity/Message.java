@@ -20,7 +20,7 @@ public class  Message {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false, columnDefinition = "TEXT")
-    private String content;
+    private String message;
     @Enumerated(EnumType.STRING)
     private ChatMessageType type;
     @Column(nullable = false)

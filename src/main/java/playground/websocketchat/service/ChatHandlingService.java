@@ -36,7 +36,7 @@ public class ChatHandlingService {
         headerAccessor.getSessionAttributes().put("room", room);
 
         // Save member if not already in
-        if(!chatRoomMembersRepository.existsByRoomAndUser(room, user)){
+        if(!chatRoomMembersRepository.existsByRoomAndMember(room, user)){
             chatRoomMembersRepository.save(chatRoomMembersMapper.toEntity(new ChatRoomMembersRequestDTO(room,user,UserRole.MEMBER)));
         }
 
@@ -50,7 +50,7 @@ public class ChatHandlingService {
         ChatRoom room  = (ChatRoom) headerAccessor.getSessionAttributes().get("room");
 //       dirty now and i'lll clean it next
         Message message = new Message();
-        message.setContent(messageRequestDTO.getMessage());
+        message.setMessage(messageRequestDTO.getMessage());
         message.setRoom(room);
         message.setSender(user);
         message.setType(ChatMessageType.MESSAGE);
