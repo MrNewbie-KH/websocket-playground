@@ -31,9 +31,13 @@ public class ChatHandlingService {
 
         ChatRoom room = chatRoomRepository.findById(joinRoomRequestDTO.getRoomId())
                 .orElseThrow(() -> new RuntimeException("Room not found"));
-        User user = userRepository.findUserByEmail(joinRoomRequestDTO.getEmail());
+        User user = userRepository.findUserByEmail(joinRoomRequestDTO.getEmail())
+                        .orElseThrow(() -> new RuntimeException("User not found"));
+
+
         headerAccessor.getSessionAttributes().put("user", user);
         headerAccessor.getSessionAttributes().put("room", room);
+        System.out.println(user.getName());
 
         // Save member if not already in
         if(!chatRoomMembersRepository.existsByRoomAndMember(room, user)){

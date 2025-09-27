@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import playground.websocketchat.entity.enums.ChatMessageType;
 
 import java.time.LocalDateTime;
@@ -24,7 +26,10 @@ public class  Message {
     @Enumerated(EnumType.STRING)
     private ChatMessageType type;
     @Column(nullable = false)
+    @CreationTimestamp
     private LocalDateTime createdAt;
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 
 //    Relationships
     @ManyToOne

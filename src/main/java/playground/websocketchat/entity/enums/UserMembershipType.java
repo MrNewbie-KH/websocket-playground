@@ -1,6 +1,8 @@
 package playground.websocketchat.entity.enums;
 
-public enum PunishmentType {
+public enum UserMembershipType {
+    ACTIVE,
+    INACTIVE,
     MUTED,
     BANNED
 }

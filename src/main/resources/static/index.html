@@ -61,7 +61,7 @@
             subscription = stompClient.subscribe("/topic/room/" + roomId, (messageOutput) => {
                 const msg = JSON.parse(messageOutput.body);
                 const li = document.createElement("li");
-                li.innerText = `${msg.sender?.email || "Unknown"}: ${msg.message}`;
+                li.innerText = `${msg.sender?.name || "Unknown"}: ${msg.message}`;
                 document.getElementById("messages").appendChild(li);
             });
 
