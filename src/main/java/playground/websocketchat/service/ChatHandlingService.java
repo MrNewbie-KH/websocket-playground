@@ -8,6 +8,7 @@ import playground.websocketchat.entity.ChatRoom;
 import playground.websocketchat.entity.Message;
 import playground.websocketchat.entity.User;
 import playground.websocketchat.entity.enums.ChatMessageType;
+import playground.websocketchat.entity.enums.UserMembershipType;
 import playground.websocketchat.entity.enums.UserRole;
 import playground.websocketchat.mapper.ChatRoomMembersMapper;
 import playground.websocketchat.mapper.MessageMapper;
@@ -27,7 +28,7 @@ public class ChatHandlingService {
     private final ChatRoomMembersMapper chatRoomMembersMapper;
     private final MessageRepository messageRepository;
     private final MessageMapper messageMapper;
-    public MessageResponseDTO handleJoin(JoinRoomRequestDTO joinRoomRequestDTO, SimpMessageHeaderAccessor  headerAccessor ) {
+    public void handleJoin(JoinRoomRequestDTO joinRoomRequestDTO, SimpMessageHeaderAccessor  headerAccessor ) {
 
         ChatRoom room = chatRoomRepository.findById(joinRoomRequestDTO.getRoomId())
                 .orElseThrow(() -> new RuntimeException("Room not found"));
@@ -37,14 +38,14 @@ public class ChatHandlingService {
 
         headerAccessor.getSessionAttributes().put("user", user);
         headerAccessor.getSessionAttributes().put("room", room);
-        System.out.println(user.getName());
+
 
         // Save member if not already in
         if(!chatRoomMembersRepository.existsByRoomAndMember(room, user)){
-            chatRoomMembersRepository.save(chatRoomMembersMapper.toEntity(new ChatRoomMembersRequestDTO(room,user,UserRole.MEMBER)));
+            chatRoomMembersRepository.save(chatRoomMembersMapper.toEntity(new ChatRoomMembersRequestDTO(room,user,UserRole.MEMBER, UserMembershipType.ACTIVE)));
+            handleMessage(new MessageRequestDTO(user.getName()+"entered out room,say HI..!",ChatMessageType.JOIN), headerAccessor);
         }
 
-        return handleMessage(new MessageRequestDTO("Hello, New join to the channel"), headerAccessor);
 
 
     }
@@ -52,13 +53,12 @@ public class ChatHandlingService {
     public MessageResponseDTO handleMessage(MessageRequestDTO messageRequestDTO, SimpMessageHeaderAccessor  headerAccessor) {
         User user  = (User) headerAccessor.getSessionAttributes().get("user");
         ChatRoom room  = (ChatRoom) headerAccessor.getSessionAttributes().get("room");
-//       dirty now and i'lll clean it next
+//       dirty now and i'll clean it next
         Message message = new Message();
         message.setMessage(messageRequestDTO.getMessage());
         message.setRoom(room);
         message.setSender(user);
-        message.setType(ChatMessageType.MESSAGE);
-        message.setCreatedAt(LocalDateTime.now());
+        message.setType(messageRequestDTO.getChatMessageType());
         messageRepository.save(message);
 //        -------------------------------------------
         MessageResponseDTO messageResponseDTO =messageMapper.toDTO(message);

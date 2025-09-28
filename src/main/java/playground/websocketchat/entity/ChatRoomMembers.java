@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import playground.websocketchat.entity.enums.UserMembershipType;
 import playground.websocketchat.entity.enums.UserRole;
 
@@ -35,6 +36,7 @@ public class ChatRoomMembers {
     @JoinColumn(name = "room_id",nullable = false)
     private ChatRoom room;
     @Column(nullable = false)
+    @CreationTimestamp
     private LocalDateTime lastActiveAt;
     @Enumerated(EnumType.STRING)
     private UserMembershipType  userMembershipType;

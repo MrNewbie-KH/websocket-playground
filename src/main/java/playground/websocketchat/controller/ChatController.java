@@ -17,8 +17,8 @@ public class ChatController {
     private final ChatHandlingService chatHandlingService;
 
     @MessageMapping("/chat.join")
-    public MessageResponseDTO join(@Payload JoinRoomRequestDTO joinRequest, SimpMessageHeaderAccessor headerAccessor) {
-        return chatHandlingService.handleJoin(joinRequest, headerAccessor);
+    public void join(@Payload JoinRoomRequestDTO joinRequest, SimpMessageHeaderAccessor headerAccessor) {
+         chatHandlingService.handleJoin(joinRequest, headerAccessor);
 
     }
 
