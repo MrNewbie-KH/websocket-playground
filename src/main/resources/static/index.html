@@ -25,6 +25,7 @@
 <div id="chatSection">
     <h3>Room: <span id="currentRoom"></span></h3>
     <button onclick="leaveRoom()">Leave Room</button>
+    <button onclick="exitRoom()">Exit Room</button>
     <br><br>
 
     <input id="msg" placeholder="Type message..." />
@@ -41,7 +42,6 @@
 
     function connectWS(callback) {
         if (!stompClient) {
-            // MUST use SockJS because backend used withSockJS()
             const socket = new SockJS("http://localhost:8080/ws");
             stompClient = Stomp.over(socket);
 
@@ -58,14 +58,15 @@
         email = document.getElementById("email").value;
 
         connectWS(() => {
+            // Subscribe to room topic
             subscription = stompClient.subscribe("/topic/room/" + roomId, (messageOutput) => {
                 const msg = JSON.parse(messageOutput.body);
                 const li = document.createElement("li");
-                li.innerText = `${msg.sender?.name || "Unknown"}: ${msg.message}`;
+                li.innerText = `${msg.sender?.name || "System"}: ${msg.message}`;
                 document.getElementById("messages").appendChild(li);
             });
 
-            // Send Join request: { roomId, email }
+            // Tell backend I joined
             stompClient.send("/app/chat.join", {}, JSON.stringify({
                 roomId: roomId,
                 email: email
@@ -78,19 +79,27 @@
     }
 
     function leaveRoom() {
+        // Notify backend
+        stompClient.send("/app/chat.leave", {}, JSON.stringify({
+            roomId: roomId,
+            email: email
+        }));
+
+        // Then exit locally
+        exitRoom();
+    }
+
+    function exitRoom() {
         if (subscription) {
             subscription.unsubscribe();
             subscription = null;
         }
-        if (stompClient) {
-            stompClient.disconnect(() => {
-                stompClient = null;
-            });
-        }
-
+        // Keep connection alive for other rooms
         document.getElementById("joinSection").style.display = "block";
         document.getElementById("chatSection").style.display = "none";
         document.getElementById("messages").innerHTML = "";
+        document.getElementById("roomId").value = "";
+        document.getElementById("currentRoom").innerText = "";
     }
 
     function sendMessage() {

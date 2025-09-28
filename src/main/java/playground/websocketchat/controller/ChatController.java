@@ -27,4 +27,9 @@ public class ChatController {
         return chatHandlingService.handleMessage(messageRequestDTO, headerAccessor);
 
     }
+    @MessageMapping("/chat.leave")
+    public void handleLeave( SimpMessageHeaderAccessor headerAccessor) {
+         chatHandlingService.handleLeave( headerAccessor);
+
+    }
 }

@@ -5,6 +5,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import playground.websocketchat.dto.*;
 import playground.websocketchat.entity.ChatRoom;
+import playground.websocketchat.entity.ChatRoomMembers;
 import playground.websocketchat.entity.Message;
 import playground.websocketchat.entity.User;
 import playground.websocketchat.entity.enums.ChatMessageType;
@@ -43,12 +44,36 @@ public class ChatHandlingService {
         // Save member if not already in
         if(!chatRoomMembersRepository.existsByRoomAndMember(room, user)){
             chatRoomMembersRepository.save(chatRoomMembersMapper.toEntity(new ChatRoomMembersRequestDTO(room,user,UserRole.MEMBER, UserMembershipType.ACTIVE)));
-            handleMessage(new MessageRequestDTO(user.getName()+"entered out room,say HI..!",ChatMessageType.JOIN), headerAccessor);
+            handleMessage(new MessageRequestDTO(user.getName()+" entered out room,say HI..!",ChatMessageType.JOIN), headerAccessor);
+
+        }
+        else{
+            ChatRoomMembers chatRoomMembers = chatRoomMembersRepository.findByRoomAndMember(room,user);
+            chatRoomMembers.setUserMembershipType(UserMembershipType.ACTIVE);
+            chatRoomMembersRepository.save(chatRoomMembers);
+            handleMessage(new MessageRequestDTO(user.getName()+" , welcome back to our room ",ChatMessageType.JOIN), headerAccessor);
+
+
         }
 
 
-
     }
+    public void handleLeave(SimpMessageHeaderAccessor  headerAccessor ) {
+
+        ChatRoom room = (ChatRoom) headerAccessor.getSessionAttributes().get("room");
+        User user = (User) headerAccessor.getSessionAttributes().get("user");
+
+
+        headerAccessor.getSessionAttributes().put("user", user);
+        headerAccessor.getSessionAttributes().put("room", room);
+
+
+        ChatRoomMembers chatRoomMembers = chatRoomMembersRepository.findByRoomAndMember(room,user);
+        chatRoomMembers.setUserMembershipType(UserMembershipType.LEFT);
+        chatRoomMembersRepository.save(chatRoomMembers);
+        handleMessage(new MessageRequestDTO(user.getName()+"Left our room ",ChatMessageType.LEAVE), headerAccessor);
+        }
+
 
     public MessageResponseDTO handleMessage(MessageRequestDTO messageRequestDTO, SimpMessageHeaderAccessor  headerAccessor) {
         User user  = (User) headerAccessor.getSessionAttributes().get("user");
@@ -66,4 +91,5 @@ public class ChatHandlingService {
         return messageResponseDTO;
 
     }
+
 }
